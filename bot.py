@@ -8,7 +8,7 @@ TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # ← 自分のDiscord Botトークン�
 CHANNEL_ID = 123456789012345678   # ← 通知を送りたいチャンネルIDを入れてください
 API_URL = "https://api.dexscreener.com/latest/dex/pairs/osmosis/1943"
 CHECK_INTERVAL = 300  # 価格チェックの間隔（秒）
-PRICE_CHANGE_THRESHOLD = 0.05  # 5% 以上の変動で通知
+PRICE_CHANGE_THRESHOLD = 0.005  # 0.5% 以上の変動で通知
 
 # --- BOT 初期化 ---
 intents = discord.Intents.default()
