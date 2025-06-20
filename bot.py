@@ -6,9 +6,12 @@ import asyncio
 # --- 設定 ---
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 if not TOKEN:
-    raise ValueError("DISCORD_BOT_TOKEN が見つかりません")
+    raise ValueError("DISCORD_BOT_TOKEN が見つかりません。Renderに環境変数を設定してください。")
 
-CHANNEL_ID = 123456789012345678  # ← 通知を送りたいチャンネルIDに置き換えてください
+CHANNEL_ID = int(os.getenv("CHANNEL_ID", "0"))
+if CHANNEL_ID == 0:
+    raise ValueError("CHANNEL_ID が見つかりません。Renderに環境変数を設定してください。")
+
 API_URL = "https://api.dexscreener.com/latest/dex/pairs/osmosis/1943"
 CHECK_INTERVAL = 300  # チェック間隔（秒）
 PRICE_CHANGE_THRESHOLD = 0.0025  # 0.25%以上の変動で通知
