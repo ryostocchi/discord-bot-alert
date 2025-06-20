@@ -4,11 +4,14 @@ import requests
 import asyncio
 
 # --- 設定 ---
-TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # ← 自分のDiscord Botトークンを入れてください
-CHANNEL_ID = 123456789012345678   # ← 通知を送りたいチャンネルIDを入れてください
+TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+if not TOKEN:
+    raise ValueError("DISCORD_BOT_TOKEN が見つかりません")
+
+CHANNEL_ID = 123456789012345678  # ← 通知を送りたいチャンネルIDに置き換えてください
 API_URL = "https://api.dexscreener.com/latest/dex/pairs/osmosis/1943"
-CHECK_INTERVAL = 300  # 価格チェックの間隔（秒）
-PRICE_CHANGE_THRESHOLD = 0.0025  # 0.25% 以上の変動で通知
+CHECK_INTERVAL = 300  # チェック間隔（秒）
+PRICE_CHANGE_THRESHOLD = 0.0025  # 0.25%以上の変動で通知
 
 # --- BOT 初期化 ---
 intents = discord.Intents.default()
@@ -18,7 +21,7 @@ previous_price = None
 
 @client.event
 async def on_ready():
-    print(f"ログイン完了: {client.user}")
+    print(f"✅ ログイン完了: {client.user}")
     await monitor_price()
 
 async def monitor_price():
@@ -26,9 +29,13 @@ async def monitor_price():
     await client.wait_until_ready()
     channel = client.get_channel(CHANNEL_ID)
 
+    if channel is None:
+        print("❌ チャンネルが見つかりません。CHANNEL_IDを確認してください。")
+        return
+
     while not client.is_closed():
         try:
-            response = requests.get(API_URL)
+            response = requests.get(API_URL, timeout=10)
             data = response.json()
             current_price = float(data["pair"]["priceUsd"])
 
@@ -45,7 +52,7 @@ async def monitor_price():
 
             previous_price = current_price
         except Exception as e:
-            print(f"エラー発生: {e}")
+            print(f"⚠ エラー発生: {e}")
 
         await asyncio.sleep(CHECK_INTERVAL)
 
